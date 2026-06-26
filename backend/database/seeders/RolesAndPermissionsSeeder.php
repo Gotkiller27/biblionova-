@@ -73,7 +73,7 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
 
         // 3. Responsable Validation - Deposit request validation
-        $validationRole = Role::firstOrCreate(['name' => 'responsable_validation']);
+        $validationRole = Role::firstOrCreate(['name' => 'responsable_demande']);
         $validationRole->givePermissionTo([
             'view all deposit requests',
             'approve deposit requests',

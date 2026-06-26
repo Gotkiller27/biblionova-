@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions; // <-- AJOUT de l'import pour les options
 use App\Notifications\ResetPasswordNotification;
 
 class User extends Authenticatable
@@ -41,9 +42,17 @@ class User extends Authenticatable
         ];
     }
 
-    protected static $logName = 'user';
-    protected static $logFillable = true;
-    protected static $logOnlyDirty = true;
+    /**
+     * Configuration moderne de Spatie Activitylog (Remplace les anciennes propriétés statiques)
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('user')         // Remplace protected static $logName = 'user';
+            ->logFillable()              // Remplace protected static $logFillable = true;
+            ->logOnlyDirty()             // Remplace protected static $logOnlyDirty = true;
+            ->dontSubmitEmptyLogs();
+    }
 
     /**
      * Send the password reset notification.

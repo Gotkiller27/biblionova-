@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\DepositRequest;
 use Illuminate\Database\Seeder;
 
 class DepositRequestSeeder extends Seeder
@@ -12,6 +12,6 @@ class DepositRequestSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\DepositRequest::factory(10)->create();
+        DepositRequest::factory(10)->create();
     }
 }

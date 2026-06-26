@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class ProfileResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
@@ -21,10 +21,13 @@ class UserResource extends JsonResource
             'email_verified_at' => $this->email_verified_at,
             'last_login_at' => $this->last_login_at,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            'deleted_at' => $this->deleted_at,
             'roles' => RoleResource::collection($this->whenLoaded('roles')),
             'permissions' => PermissionResource::collection($this->whenLoaded('permissions')),
+            'statistics' => [
+                'deposit_requests_count' => $this->whenLoaded('depositRequests', $this->depositRequests_count ?? $this->depositRequests->count()),
+                'uploaded_references_count' => $this->whenLoaded('uploadedReferences', $this->uploaded_references_count ?? $this->uploadedReferences->count()),
+                'reviews_count' => $this->whenLoaded('reviews', $this->reviews_count ?? $this->reviews->count()),
+            ],
         ];
     }
 }

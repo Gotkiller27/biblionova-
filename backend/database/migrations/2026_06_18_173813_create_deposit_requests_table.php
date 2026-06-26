@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('deposit_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('applicant_id')->constrained('users')->cascadeOnDelete()->index();
-            $table->foreignId('assigned_manager_id')->nullable()->constrained('users')->nullOnDelete()->index();
+            $table->foreignId('applicant_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('assigned_manager_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('title');
             $table->text('description');
             $table->string('proposed_file')->nullable();

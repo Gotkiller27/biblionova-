@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('downloads', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('reference_id')->constrained()->cascadeOnDelete()->index();
+            $table->foreignId('reference_id')->constrained()->cascadeOnDelete();
             $table->timestamp('downloaded_at')->nullable();
             $table->timestamps();
         });

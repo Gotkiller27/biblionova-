@@ -39,6 +39,16 @@ class UserPolicy
 
     public function forceDelete(User $user, User $model): bool
     {
-        return $user->can('delete users');
+        return $user->hasRole('admin') && $user->id !== $model->id;
+    }
+
+    public function assignRole(User $user, User $model): bool
+    {
+        return $user->hasRole('admin');
+    }
+
+    public function assignPermission(User $user, User $model): bool
+    {
+        return $user->hasRole('admin');
     }
 }

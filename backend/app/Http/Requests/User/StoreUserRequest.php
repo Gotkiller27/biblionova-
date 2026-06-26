@@ -20,7 +20,7 @@ class StoreUserRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'phone' => 'nullable|string|max:20',
             'password' => 'required|string|min:8|confirmed',
-            'status' => 'nullable|in:active,inactive',
+            'status' => 'nullable|in:active,inactive,suspended',
             'role' => 'nullable|exists:roles,name',
         ];
     }

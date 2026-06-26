@@ -7,6 +7,7 @@ use App\Models\Reference;
 use App\Models\DepositRequest;
 use App\Models\View;
 use App\Models\Download;
+use Carbon\Carbon;
 
 class StatisticsService
 {
@@ -14,6 +15,10 @@ class StatisticsService
     {
         return [
             'total_users' => User::count(),
+            'active_users' => User::where('status', 'active')->count(),
+            'suspended_users' => User::where('status', 'suspended')->count(),
+            'new_users_this_month' => User::where('created_at', '>=', Carbon::now()->startOfMonth())->count(),
+            'recent_logins' => User::where('last_login_at', '>=', Carbon::now()->subDays(7))->count(),
             'total_references' => Reference::count(),
             'total_deposit_requests' => DepositRequest::count(),
             'published_references' => Reference::published()->count(),

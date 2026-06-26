@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\DocumentRevisionController;
 use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\API\StatisticsController;
 use App\Http\Controllers\API\NotificationController;
+use App\Http\Controllers\API\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -34,6 +35,13 @@ Route::prefix('v1')->group(function () {
         Route::post('/auth/refresh', [AuthController::class, 'refresh']);
         Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
 
+        // Profile endpoints
+        Route::get('/profile', [ProfileController::class, 'show']);
+        Route::put('/profile', [ProfileController::class, 'update']);
+        Route::post('/profile/avatar', [ProfileController::class, 'uploadAvatar']);
+        Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar']);
+        Route::post('/profile/change-password', [ProfileController::class, 'changePassword']);
+
         // Notifications
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
@@ -44,8 +52,21 @@ Route::prefix('v1')->group(function () {
         Route::get('/statistics/downloads', [StatisticsController::class, 'downloads']);
         Route::get('/statistics/views', [StatisticsController::class, 'views']);
 
+        // User management routes
         Route::middleware(['check.role:admin,responsable_rh'])->group(function () {
             Route::apiResource('users', UserController::class);
+            Route::post('/users/{user}/restore', [UserController::class, 'restore']);
+            Route::delete('/users/{user}/force-delete', [UserController::class, 'forceDelete']);
+            Route::get('/users/{user}/roles', [UserController::class, 'getRoles']);
+            Route::post('/users/{user}/assign-role', [UserController::class, 'assignRole']);
+            Route::delete('/users/{user}/remove-role', [UserController::class, 'removeRole']);
+            Route::post('/users/{user}/sync-roles', [UserController::class, 'syncRoles']);
+            Route::get('/users/{user}/permissions', [UserController::class, 'getPermissions']);
+            Route::post('/users/{user}/assign-permission', [UserController::class, 'assignPermission']);
+            Route::delete('/users/{user}/remove-permission', [UserController::class, 'removePermission']);
+            Route::post('/users/{user}/sync-permissions', [UserController::class, 'syncPermissions']);
+            Route::put('/users/{user}/status', [UserController::class, 'updateStatus']);
+            Route::get('/users/export', [UserController::class, 'export']);
         });
 
         // Categories

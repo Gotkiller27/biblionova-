@@ -19,14 +19,27 @@ return new class extends Migration
             $table->enum('document_type', ['livre', 'memoire', 'these', 'article', 'revue', 'rapport', 'guide', 'autre'])->default('livre');
             $table->foreignId('category_id')->constrained()->cascadeOnDelete()->index();
             $table->unsignedBigInteger('publisher_id')->nullable()->index();
-            // Explicit constraint name prevents MySQL duplicate constraint issues on repeated migration runs.
+            
+            // Clé étrangère Publisher (Déjà explicite)
             $table->foreign('publisher_id', 'references_publisher_id_foreign')
                 ->references('id')
                 ->on('publishers')
                 ->nullOnDelete();
 
-            $table->foreignId('uploaded_by')->constrained('users')->nullOnDelete()->index();
-            $table->foreignId('bibliothecaire_id')->nullable()->constrained('users')->nullOnDelete()->index();
+            // Clé étrangère Uploaded By (Sécurisée avec nom explicite)
+            $table->unsignedBigInteger('uploaded_by')->nullable();
+            $table->foreign('uploaded_by', 'references_uploaded_by_foreign')
+                ->references('id')
+                ->on('users')
+                ->nullOnDelete();
+            
+            // Clé étrangère Bibliothecaire (Sécurisée avec nom explicite)
+            $table->unsignedBigInteger('bibliothecaire_id')->nullable();
+            $table->foreign('bibliothecaire_id', 'references_bibliothecaire_id_foreign')
+                ->references('id')
+                ->on('users')
+                ->nullOnDelete();
+
             $table->string('cover_image')->nullable();
             $table->string('file_path')->nullable();
             $table->integer('pages')->nullable();
