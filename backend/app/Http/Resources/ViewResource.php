@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class ViewResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'reference_id' => $this->reference_id,
+            'viewed_at' => $this->viewed_at,
+            'created_at' => $this->created_at,
+            'user' => new UserResource($this->whenLoaded('user')),
+            'reference' => new ReferenceResource($this->whenLoaded('reference')),
+        ];
+    }
+}

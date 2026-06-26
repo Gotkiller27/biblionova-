@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXADOC - Test Authentification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <!-- Test Rapide Authentification -->
+    <div class="min-h-screen flex items-center justify-center py-12">
+        <div class="max-w-md w-full space-y-8">
+            <div class="text-center">
+                <div class="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
+                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253"/>
+                    </svg>
+                </div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Test NEXADOC API
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Test rapide de l'authentification backend
+                </p>
+            </div>
+
+            <!-- Formulaire de test -->
+            <div class="bg-white rounded-xl shadow-lg p-8 space-y-6">
+                <!-- Messages -->
+                <div id="message" class="hidden"></div>
+
+                <!-- Test API Status -->
+                <button 
+                    onclick="testApiStatus()" 
+                    class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                    🔍 Tester la connexion API
+                </button>
+
+                <!-- Test Login -->
+                <div class="space-y-4">
+                    <input 
+                        type="email" 
+                        id="email" 
+                        value="admin@nexadoc.com"
+                        placeholder="Email"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <input 
+                        type="password" 
+                        id="password" 
+                        value="password123"
+                        placeholder="Mot de passe"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <button 
+                        onclick="testLogin()" 
+                        class="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                        🔐 Tester la connexion
+                    </button>
+                </div>
+
+                <!-- Utilisateurs de test -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-medium text-gray-900 mb-2">👤 Utilisateurs de test :</h3>
+                    <div class="text-sm space-y-1">
+                        <div>
+                            <button onclick="setCredentials('admin@nexadoc.com', 'password123')" class="text-blue-600 hover:underline">
+                                Admin: admin@nexadoc.com
+                            </button>
+                        </div>
+                        <div>
+                            <button onclick="setCredentials('user@nexadoc.com', 'password123')" class="text-blue-600 hover:underline">
+                                User: user@nexadoc.com
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lien vers Vue.js -->
+            <div class="text-center">
+                <a href="http://localhost:5173" target="_blank" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                    🚀 Ouvrir l'application Vue.js complète
+                    <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration Axios pour Sanctum SPA
+        axios.defaults.baseURL = 'http://localhost:8000';
+        axios.defaults.withCredentials = true;
+        axios.defaults.headers.common['Accept'] = 'application/json';
+
+        function showMessage(text, type = 'info') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = `p-4 rounded-lg ${type === 'success' ? 'bg-green-50 text-green-800' : type === 'error' ? 'bg-red-50 text-red-800' : 'bg-blue-50 text-blue-800'}`;
+            messageDiv.textContent = text;
+            messageDiv.classList.remove('hidden');
+        }
+
+        function setCredentials(email, password) {
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = password;
+        }
+
+        async function testApiStatus() {
+            try {
+                showMessage('🔍 Test de connexion à l\'API...', 'info');
+                
+                const response = await axios.get('/api/v1/auth/check');
+                showMessage('✅ API connectée ! ' + JSON.stringify(response.data), 'success');
+            } catch (error) {
+                showMessage('❌ Erreur API: ' + (error.response?.data?.message || error.message), 'error');
+            }
+        }
+
+        async function testLogin() {
+            try {
+                showMessage('🔐 Connexion en cours...', 'info');
+                
+                // Obtenir le CSRF cookie d'abord
+                await axios.get('/sanctum/csrf-cookie');
+                
+                // Tenter la connexion
+                const response = await axios.post('/api/v1/auth/login', {
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value
+                });
+                
+                showMessage('✅ Connexion réussie ! Utilisateur: ' + response.data.data.user.email + ' | Rôle: ' + (response.data.data.user.roles[0]?.name || 'aucun'), 'success');
+            } catch (error) {
+                showMessage('❌ Erreur de connexion: ' + (error.response?.data?.message || error.message), 'error');
+            }
+        }
+
+        // Test initial au chargement
+        window.onload = function() {
+            testApiStatus();
+        }
+    </script>
+</body>
+</html>

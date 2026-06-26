@@ -1,0 +1,592 @@
+{
+  "info": {
+    "name": "Biblionova - Workflow Métier",
+    "description": "Collection complète pour tester le workflow de gestion des demandes de dépôt documentaire",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "user_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "responsable_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bibliothecaire_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "deposit_request_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login - User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login - Responsable",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"responsable@example.com\",\n    \"password\": \"password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login - Admin",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login - Bibliothecaire",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"bibliothecaire@example.com\",\n    \"password\": \"password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Deposit Requests",
+      "item": [
+        {
+          "name": "Créer une demande",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Mon document de recherche",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Description de mon document",
+                  "type": "text"
+                },
+                {
+                  "key": "proposed_file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/deposit-requests",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests"]
+            }
+          }
+        },
+        {
+          "name": "Mes demandes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deposit-requests/my-requests",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests", "my-requests"]
+            }
+          }
+        },
+        {
+          "name": "Demandes assignées (Responsable)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{responsable_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deposit-requests/assigned",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests", "assigned"]
+            }
+          }
+        },
+        {
+          "name": "Demandes en attente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{responsable_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deposit-requests/pending",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests", "pending"]
+            }
+          }
+        },
+        {
+          "name": "Toutes les demandes (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deposit-requests",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests"]
+            }
+          }
+        },
+        {
+          "name": "Afficher une demande",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deposit-requests/{{deposit_request_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests", "{{deposit_request_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Modifier une demande",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Titre modifié\",\n    \"description\": \"Description modifiée\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/deposit-requests/{{deposit_request_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests", "{{deposit_request_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Supprimer une demande",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deposit-requests/{{deposit_request_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests", "{{deposit_request_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workflow Actions",
+      "item": [
+        {
+          "name": "Assigner un responsable (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"manager_id\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/deposit-requests/{{deposit_request_id}}/assign",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests", "{{deposit_request_id}}", "assign"]
+            }
+          }
+        },
+        {
+          "name": "Approuver (Responsable)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{responsable_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"justification\": \"Document conforme aux critères de qualité\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/deposit-requests/{{deposit_request_id}}/approve",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests", "{{deposit_request_id}}", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Rejeter (Responsable)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{responsable_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"justification\": \"Document ne respecte pas les critères\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/deposit-requests/{{deposit_request_id}}/reject",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests", "{{deposit_request_id}}", "reject"]
+            }
+          }
+        },
+        {
+          "name": "Demander second avis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{responsable_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"justification\": \"Dossier complexe nécessitant un avis administratif\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/deposit-requests/{{deposit_request_id}}/second-review",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests", "{{deposit_request_id}}", "second-review"]
+            }
+          }
+        },
+        {
+          "name": "Approuver (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"justification\": \"Validation finale approuvée\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/deposit-requests/{{deposit_request_id}}/approve",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests", "{{deposit_request_id}}", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Publier (Bibliothécaire)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bibliothecaire_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deposit-requests/{{deposit_request_id}}/publish",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-requests", "{{deposit_request_id}}", "publish"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Liste des reviews (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deposit-request-reviews",
+              "host": ["{{base_url}}"],
+              "path": ["deposit-request-reviews"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Document Revisions",
+      "item": [
+        {
+          "name": "Créer une révision",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bibliothecaire_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reference_id\": 1,\n    \"action\": \"modification\",\n    \"commentaire\": \"Correction des métadonnées\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/document-revisions",
+              "host": ["{{base_url}}"],
+              "path": ["document-revisions"]
+            }
+          }
+        },
+        {
+          "name": "Liste des révisions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bibliothecaire_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/document-revisions",
+              "host": ["{{base_url}}"],
+              "path": ["document-revisions"]
+            }
+          }
+        },
+        {
+          "name": "Révisions d'une référence",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bibliothecaire_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/document-revisions/reference/1",
+              "host": ["{{base_url}}"],
+              "path": ["document-revisions", "reference", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

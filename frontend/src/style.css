@@ -1,0 +1,204 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Merriweather:wght@300;400;700&family=Source+Serif+Pro:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Merriweather', 'Source Serif Pro', serif;
+  line-height: 1.7;
+  color: #2D2A26;
+  background-color: #F8F5F0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+  font-weight: 600;
+  color: #2D2A26;
+}
+
+/* PrimeVue Customization - COMPLETE OVERRIDE */
+
+/* Buttons */
+.p-button {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+}
+
+.p-button-primary {
+  background: #5C4033;
+  border: 1px solid #5C4033;
+  color: white;
+}
+
+.p-button-primary:hover {
+  background: #6D4C3D !important;
+  border-color: #6D4C3D !important;
+  transform: translateY(-2px);
+}
+
+.p-button-secondary {
+  background: transparent;
+  border: 1px solid #7A5C43;
+  color: #7A5C43;
+}
+
+.p-button-secondary:hover {
+  background: #7A5C43 !important;
+  border-color: #7A5C43 !important;
+  color: white !important;
+  transform: translateY(-2px);
+}
+
+/* Input Fields */
+.p-inputtext {
+  font-family: 'Merriweather', serif;
+  border-radius: 8px;
+  border: 1px solid #E2D7C6;
+  background: white;
+  color: #2D2A26;
+  transition: all 0.25s ease;
+}
+
+.p-inputtext:focus {
+  outline: none;
+  border-color: #C5A46D !important;
+  box-shadow: 0 0 0 3px rgba(197, 164, 109, 0.15);
+}
+
+/* Cards */
+.p-card {
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04), 0 8px 20px rgba(0,0,0,.06);
+  border: none;
+}
+
+/* DataTable */
+.p-datatable {
+  background: transparent;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  background: #EFE7DC;
+  color: #2D2A26;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  text-transform: none;
+  border: none;
+  padding: 1rem 1.5rem;
+}
+
+.p-datatable .p-datatable-tbody > tr {
+  background: white;
+  border-bottom: 1px solid #E2D7C6;
+  transition: all 0.25s ease;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+  background: #F8F5F0;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  border: none;
+  padding: 1rem 1.5rem;
+  color: #2D2A26;
+}
+
+/* Sidebar */
+.p-sidebar {
+  background: #5C4033;
+  border: none;
+}
+
+.p-sidebar .p-sidebar-header,
+.p-sidebar .p-sidebar-content {
+  color: #F8F5F0;
+}
+
+/* Menu */
+.p-menu {
+  background: transparent;
+  border: none;
+}
+
+.p-menuitem {
+  margin: 0.25rem 0;
+}
+
+.p-menuitem-link {
+  color: #F8F5F0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  transition: all 0.25s ease;
+}
+
+.p-menuitem-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.p-menuitem-link.active {
+  color: #C5A46D;
+  background: rgba(197, 164, 109, 0.1);
+}
+
+.p-menuitem-icon {
+  color: inherit;
+}
+
+/* Dialog */
+.p-dialog {
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04), 0 8px 20px rgba(0,0,0,.06);
+}
+
+.p-dialog-header {
+  background: #F8F5F0;
+  border-radius: 18px 18px 0 0;
+  border-bottom: 1px solid #E2D7C6;
+  font-family: 'Playfair Display', serif;
+}
+
+/* Dropdown */
+.p-dropdown {
+  border-radius: 8px;
+  border: 1px solid #E2D7C6;
+}
+
+.p-dropdown:focus-within {
+  border-color: #C5A46D;
+  box-shadow: 0 0 0 3px rgba(197, 164, 109, 0.15);
+}
+
+/* Badge */
+.p-badge {
+  background: #C5A46D;
+  color: white;
+}
+
+/* Custom Classes */
+.biblio-card {
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04), 0 8px 20px rgba(0,0,0,.06);
+  transition: all 0.25s ease;
+}
+
+.biblio-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.06), 0 12px 28px rgba(0,0,0,.08);
+}
