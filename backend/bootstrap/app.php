@@ -20,24 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Add web middleware components to API for Sanctum SPA auth
-        $middleware->api(prepend: [
-            \Illuminate\Cookie\Middleware\EncryptCookies::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
-        ]);
-
         $middleware->alias([
             'check.role' => \App\Http\Middleware\CheckRole::class,
             'check.permission' => \App\Http\Middleware\CheckPermission::class,
             'check.account.status' => \App\Http\Middleware\CheckAccountStatus::class,
-        ]);
-
-        // Exclude API routes from CSRF verification
-        $middleware->validateCsrfTokens(except: [
-            '/api/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

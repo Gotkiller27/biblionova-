@@ -15,6 +15,8 @@ class ReferenceResource extends JsonResource
             'subtitle' => $this->subtitle,
             'abstract' => $this->abstract,
             'isbn' => $this->isbn,
+            'doi' => $this->doi,
+            'issn' => $this->issn,
             'publication_year' => $this->publication_year,
             'language' => $this->language,
             'document_type' => $this->document_type,
@@ -28,6 +30,8 @@ class ReferenceResource extends JsonResource
             'download_count' => $this->download_count,
             'view_count' => $this->view_count,
             'status' => $this->status,
+            'visibility' => $this->visibility,
+            'availability' => $this->availability,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'category' => new CategoryResource($this->whenLoaded('category')),
@@ -37,6 +41,8 @@ class ReferenceResource extends JsonResource
             'authors' => AuthorResource::collection($this->whenLoaded('authors')),
             'keywords' => KeywordResource::collection($this->whenLoaded('keywords')),
             'revisions' => DocumentRevisionResource::collection($this->whenLoaded('revisions')),
+            'citation_count' => $this->whenCounted('citedByCitations'),
+            'favorite_count' => $this->whenCounted('favorites'),
         ];
     }
 }

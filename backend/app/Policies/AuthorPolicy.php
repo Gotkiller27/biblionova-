@@ -20,26 +20,38 @@ class AuthorPolicy
 
     public function create(User $user): bool
     {
-        return $user->can('create authors');
+        return $user->hasRole(['admin', 'bibliothecaire']);
     }
 
     public function update(User $user, Author $author): bool
     {
-        return $user->can('update authors');
+        return $user->hasRole(['admin', 'bibliothecaire']);
     }
 
     public function delete(User $user, Author $author): bool
     {
-        return $user->can('delete authors');
+        // Prevent deletion if author has references
+        if ($author->references()->count() > 0) {
+            return false;
+        }
+        return $user->hasRole(['admin', 'bibliothecaire']);
     }
 
     public function restore(User $user, Author $author): bool
     {
-        return $user->can('delete authors');
+        return $user->hasRole(['admin', 'bibliothecaire']);
     }
 
     public function forceDelete(User $user, Author $author): bool
     {
-        return $user->can('delete authors');
+        // Only admin can force delete
+        if (!$user->hasRole('admin')) {
+            return false;
+        }
+        // Prevent force deletion if author has references
+        if ($author->references()->withTrashed()->count() > 0) {
+            return false;
+        }
+        return true;
     }
 }

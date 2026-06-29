@@ -15,6 +15,10 @@ class StoreKeywordRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255|unique:keywords,name',
+            'slug' => 'nullable|string|max:255|unique:keywords,slug',
+            'description' => 'nullable|string',
+            'usage_count' => 'nullable|integer|min:0',
+            'popularity_score' => 'nullable|integer|min:0',
         ];
     }
 }

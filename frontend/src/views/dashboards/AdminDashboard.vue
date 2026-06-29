@@ -10,10 +10,40 @@
           </div>
         </div>
         <p class="text-text-secondary font-inter text-sm mb-1">Utilisateurs</p>
-        <p class="text-3xl font-playfair font-semibold text-text-primary">1,247</p>
+        <p class="text-3xl font-playfair font-semibold text-text-primary">{{ stats.total_users || 0 }}</p>
         <div class="mt-4 flex items-center text-sm font-inter text-green-600">
           <i class="pi pi-arrow-up mr-1"></i>
-          <span>+12% ce mois</span>
+          <span>+{{ stats.new_users_this_month || 0 }} ce mois</span>
+        </div>
+      </div>
+
+      <!-- Active Users -->
+      <div class="biblio-card">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center">
+            <i class="pi pi-user-check text-2xl text-green-700"></i>
+          </div>
+        </div>
+        <p class="text-text-secondary font-inter text-sm mb-1">Utilisateurs Actifs</p>
+        <p class="text-3xl font-playfair font-semibold text-text-primary">{{ stats.active_users || 0 }}</p>
+        <div class="mt-4 flex items-center text-sm font-inter text-blue-600">
+          <i class="pi pi-clock mr-1"></i>
+          <span>{{ stats.recent_logins || 0 }} connexions récentes</span>
+        </div>
+      </div>
+
+      <!-- Suspended Users -->
+      <div class="biblio-card">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center">
+            <i class="pi pi-user-minus text-2xl text-red-700"></i>
+          </div>
+        </div>
+        <p class="text-text-secondary font-inter text-sm mb-1">Utilisateurs Suspendus</p>
+        <p class="text-3xl font-playfair font-semibold text-text-primary">{{ stats.suspended_users || 0 }}</p>
+        <div class="mt-4 flex items-center text-sm font-inter text-red-600">
+          <i class="pi pi-exclamation-triangle mr-1"></i>
+          <span>À surveiller</span>
         </div>
       </div>
 
@@ -25,40 +55,70 @@
           </div>
         </div>
         <p class="text-text-secondary font-inter text-sm mb-1">Références</p>
-        <p class="text-3xl font-playfair font-semibold text-text-primary">8,342</p>
+        <p class="text-3xl font-playfair font-semibold text-text-primary">{{ stats.total_references || 0 }}</p>
         <div class="mt-4 flex items-center text-sm font-inter text-green-600">
-          <i class="pi pi-arrow-up mr-1"></i>
-          <span>+8% ce mois</span>
+          <i class="pi pi-check mr-1"></i>
+          <span>{{ stats.published_references || 0 }} publiées</span>
         </div>
       </div>
 
-      <!-- Pending Requests -->
+      <!-- Total Categories -->
       <div class="biblio-card">
         <div class="flex items-center justify-between mb-4">
-          <div class="w-14 h-14 rounded-xl bg-[#C5A46D]/10 flex items-center justify-center">
-            <i class="pi pi-file-plus text-2xl text-[#C5A46D]"></i>
+          <div class="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center">
+            <i class="pi pi-sitemap text-2xl text-purple-700"></i>
           </div>
         </div>
-        <p class="text-text-secondary font-inter text-sm mb-1">Demandes en attente</p>
-        <p class="text-3xl font-playfair font-semibold text-text-primary">24</p>
-        <div class="mt-4 flex items-center text-sm font-inter text-red-600">
-          <i class="pi pi-arrow-up mr-1"></i>
-          <span>+3 aujourd'hui</span>
+        <p class="text-text-secondary font-inter text-sm mb-1">Catégories</p>
+        <p class="text-3xl font-playfair font-semibold text-text-primary">{{ stats.total_categories || 0 }}</p>
+        <div class="mt-4 flex items-center text-sm font-inter text-blue-600">
+          <i class="pi pi-folder mr-1"></i>
+          <span>{{ stats.root_categories || 0 }} racines</span>
         </div>
       </div>
 
-      <!-- Downloads -->
+      <!-- Total Authors -->
       <div class="biblio-card">
         <div class="flex items-center justify-between mb-4">
-          <div class="w-14 h-14 rounded-xl bg-[#2D2A26]/10 flex items-center justify-center">
-            <i class="pi pi-download text-2xl text-[#2D2A26]"></i>
+          <div class="w-14 h-14 rounded-xl bg-orange-100 flex items-center justify-center">
+            <i class="pi pi-user text-2xl text-orange-700"></i>
           </div>
         </div>
-        <p class="text-text-secondary font-inter text-sm mb-1">Téléchargements</p>
-        <p class="text-3xl font-playfair font-semibold text-text-primary">12,847</p>
+        <p class="text-text-secondary font-inter text-sm mb-1">Auteurs</p>
+        <p class="text-3xl font-playfair font-semibold text-text-primary">{{ stats.total_authors || 0 }}</p>
         <div class="mt-4 flex items-center text-sm font-inter text-green-600">
-          <i class="pi pi-arrow-up mr-1"></i>
-          <span>+15% ce mois</span>
+          <i class="pi pi-heart mr-1"></i>
+          <span>{{ stats.alive_authors || 0 }} vivants</span>
+        </div>
+      </div>
+
+      <!-- Total Publishers -->
+      <div class="biblio-card">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-14 h-14 rounded-xl bg-cyan-100 flex items-center justify-center">
+            <i class="pi pi-building text-2xl text-cyan-700"></i>
+          </div>
+        </div>
+        <p class="text-text-secondary font-inter text-sm mb-1">Éditeurs</p>
+        <p class="text-3xl font-playfair font-semibold text-text-primary">{{ stats.total_publishers || 0 }}</p>
+        <div class="mt-4 flex items-center text-sm font-inter text-blue-600">
+          <i class="pi pi-book mr-1"></i>
+          <span>Maisons d'édition</span>
+        </div>
+      </div>
+
+      <!-- Total Keywords -->
+      <div class="biblio-card">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center">
+            <i class="pi pi-tags text-2xl text-purple-700"></i>
+          </div>
+        </div>
+        <p class="text-text-secondary font-inter text-sm mb-1">Mots-clés</p>
+        <p class="text-3xl font-playfair font-semibold text-text-primary">{{ stats.total_keywords || 0 }}</p>
+        <div class="mt-4 flex items-center text-sm font-inter text-purple-600">
+          <i class="pi pi-hashtag mr-1"></i>
+          <span>Tags disponibles</span>
         </div>
       </div>
     </div>
@@ -177,13 +237,41 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import axios from '@/plugins/axios'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 
 const authStore = useAuthStore()
+const stats = ref({
+  total_users: 0,
+  active_users: 0,
+  suspended_users: 0,
+  new_users_this_month: 0,
+  recent_logins: 0,
+  total_categories: 0,
+  active_categories: 0,
+  root_categories: 0,
+  total_authors: 0,
+  alive_authors: 0,
+  deceased_authors: 0,
+  total_publishers: 0,
+  total_keywords: 0,
+  total_references: 0,
+  published_references: 0,
+})
+
+const loadStats = async () => {
+  try {
+    const response = await axios.get('/api/v1/dashboard/admin')
+    stats.value = response.data.data
+  } catch (error) {
+    console.error('Error loading dashboard stats:', error)
+  }
+}
 
 onMounted(() => {
   console.log('Admin Dashboard loaded for:', authStore.userName)
+  loadStats()
 })
 </script>

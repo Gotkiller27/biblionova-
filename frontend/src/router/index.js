@@ -10,6 +10,22 @@ import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
 // Dashboard views
 import AdminDashboard from '@/views/dashboards/AdminDashboard.vue'
 
+// User management views
+import UsersListView from '@/views/users/UsersListView.vue'
+import UserProfileView from '@/views/users/UserProfileView.vue'
+
+// Category management views
+import CategoriesListView from '@/views/categories/CategoriesListView.vue'
+
+// Author management views
+import AuthorsListView from '@/views/authors/AuthorsListView.vue'
+
+// Publisher management views
+import PublishersListView from '@/views/publishers/PublishersListView.vue'
+
+// Keyword management views
+import KeywordsListView from '@/views/keywords/KeywordsListView.vue'
+
 const routes = [
   // Redirect root to login
   {
@@ -59,7 +75,31 @@ const routes = [
         name: 'AdminDashboard',
         component: AdminDashboard
       },
-      // TODO: Add other admin routes
+      {
+        path: 'users',
+        name: 'AdminUsers',
+        component: UsersListView
+      },
+      {
+        path: 'categories',
+        name: 'AdminCategories',
+        component: CategoriesListView
+      },
+      {
+        path: 'authors',
+        name: 'AdminAuthors',
+        component: AuthorsListView
+      },
+      {
+        path: 'publishers',
+        name: 'AdminPublishers',
+        component: PublishersListView
+      },
+      {
+        path: 'keywords',
+        name: 'AdminKeywords',
+        component: KeywordsListView
+      },
     ]
   },
 
@@ -73,7 +113,11 @@ const routes = [
         name: 'RHDashboard',
         component: () => import('@/views/dashboards/RHDashboard.vue')
       },
-      // TODO: Add other RH routes
+      {
+        path: 'users',
+        name: 'RHUsers',
+        component: UsersListView
+      },
     ]
   },
 
@@ -113,13 +157,13 @@ const routes = [
     meta: { requiresAuth: true }
   },
 
-  // Common authenticated routes (à développer)
-  // {
-  //   path: '/profile',
-  //   name: 'Profile', 
-  //   component: () => import('@/views/ProfileView.vue'),
-  //   meta: { requiresAuth: true }
-  // },
+  // Common authenticated routes
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: UserProfileView,
+    meta: { requiresAuth: true }
+  },
 
   // 404 route
   {

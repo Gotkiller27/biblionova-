@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\StoreUserRequest;
@@ -11,67 +11,35 @@ use App\Models\User;
 use App\Helpers\ApiResponse;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserCollection;
-use App\Exports\UsersExport;
+use App\Services\UserService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
+    public function __construct(protected UserService $userService)
+    {
+    }
+
     public function index(Request $request)
     {
         $this->authorize('viewAny', User::class);
 
-        $query = User::with('roles', 'permissions');
+        $filters = [
+            'search' => $request->search,
+            'role' => $request->role,
+            'status' => $request->status,
+            'from_date' => $request->from_date,
+            'to_date' => $request->to_date,
+            'with_trashed' => $request->boolean('with_trashed'),
+            'only_trashed' => $request->boolean('only_trashed'),
+        ];
 
-        // Search
-        if ($request->search) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('first_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
-            });
-        }
-
-        // Filters
-        if ($request->role) {
-            $query->whereHas('roles', function ($q) use ($request) {
-                $q->where('name', $request->role);
-            });
-        }
-
-        if ($request->status) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->from_date) {
-            $query->whereDate('created_at', '>=', $request->from_date);
-        }
-
-        if ($request->to_date) {
-            $query->whereDate('created_at', '<=', $request->to_date);
-        }
-
-        // Include trashed
-        if ($request->with_trashed) {
-            $query->withTrashed();
-        }
-
-        // Only trashed
-        if ($request->only_trashed) {
-            $query->onlyTrashed();
-        }
-
-        // Sorting
-        $sortBy = $request->sort_by ?? 'created_at';
-        $sortOrder = $request->sort_order ?? 'desc';
-        $query->orderBy($sortBy, $sortOrder);
-
-        $users = $query->paginate($request->per_page ?? 15);
+        $users = $this->userService->getUsers(
+            $filters,
+            $request->per_page ?? 15,
+            $request->sort_by ?? 'created_at',
+            $request->sort_order ?? 'desc'
+        );
 
         return ApiResponse::paginated($users, UserResource::class, 'Users retrieved successfully');
     }
@@ -79,14 +47,7 @@ class UserController extends Controller
     public function store(StoreUserRequest $request)
     {
         $this->authorize('create', User::class);
-        $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
-
-        $user = User::create($data);
-
-        if (isset($data['role'])) {
-            $user->assignRole($data['role']);
-        }
+        $user = $this->userService->createUser($request->validated());
 
         activity()
             ->causedBy(auth()->user())
@@ -117,17 +78,7 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, User $user)
     {
         $this->authorize('update', $user);
-        $data = $request->validated();
-
-        if (isset($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        }
-
-        $user->update($data);
-
-        if (isset($data['role'])) {
-            $user->syncRoles([$data['role']]);
-        }
+        $user = $this->userService->updateUser($user, $request->validated());
 
         activity()
             ->causedBy(auth()->user())
@@ -188,7 +139,7 @@ class UserController extends Controller
     {
         $this->authorize('assignRole', $user);
 
-        $user->assignRole($request->role);
+        $this->userService->assignRole($user, $request->role);
 
         activity()
             ->causedBy(auth()->user())
@@ -205,7 +156,7 @@ class UserController extends Controller
 
         $request->validate(['role' => 'required|exists:roles,name']);
 
-        $user->removeRole($request->role);
+        $this->userService->removeRole($user, $request->role);
 
         activity()
             ->causedBy(auth()->user())
@@ -222,7 +173,7 @@ class UserController extends Controller
 
         $request->validate(['roles' => 'required|array', 'roles.*' => 'exists:roles,name']);
 
-        $user->syncRoles($request->roles);
+        $this->userService->syncRoles($user, $request->roles);
 
         activity()
             ->causedBy(auth()->user())
@@ -244,7 +195,7 @@ class UserController extends Controller
     {
         $this->authorize('assignPermission', $user);
 
-        $user->givePermissionTo($request->permission);
+        $this->userService->assignPermission($user, $request->permission);
 
         activity()
             ->causedBy(auth()->user())
@@ -261,7 +212,7 @@ class UserController extends Controller
 
         $request->validate(['permission' => 'required|exists:permissions,name']);
 
-        $user->revokePermissionTo($request->permission);
+        $this->userService->removePermission($user, $request->permission);
 
         activity()
             ->causedBy(auth()->user())
@@ -278,7 +229,7 @@ class UserController extends Controller
 
         $request->validate(['permissions' => 'required|array', 'permissions.*' => 'exists:permissions,name']);
 
-        $user->syncPermissions($request->permissions);
+        $this->userService->syncPermissions($user, $request->permissions);
 
         activity()
             ->causedBy(auth()->user())
@@ -296,7 +247,7 @@ class UserController extends Controller
 
         $request->validate(['status' => 'required|in:active,inactive,suspended']);
 
-        $user->update(['status' => $request->status]);
+        $this->userService->updateStatus($user, $request->status);
 
         activity()
             ->causedBy(auth()->user())
@@ -328,10 +279,6 @@ class UserController extends Controller
             ->withProperties(['filters' => $filters, 'format' => $format])
             ->log('Users exported');
 
-        if ($format === 'csv') {
-            return Excel::download(new UsersExport($filters), 'users_' . date('Y-m-d') . '.csv');
-        }
-
-        return Excel::download(new UsersExport($filters), 'users_' . date('Y-m-d') . '.xlsx');
+        return $this->userService->exportUsers($filters, $format);
     }
 }

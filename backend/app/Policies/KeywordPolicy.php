@@ -20,26 +20,38 @@ class KeywordPolicy
 
     public function create(User $user): bool
     {
-        return $user->can('create keywords');
+        return $user->hasRole(['admin', 'bibliothecaire']);
     }
 
     public function update(User $user, Keyword $keyword): bool
     {
-        return $user->can('update keywords');
+        return $user->hasRole(['admin', 'bibliothecaire']);
     }
 
     public function delete(User $user, Keyword $keyword): bool
     {
-        return $user->can('delete keywords');
+        // Prevent deletion if keyword has references
+        if ($keyword->references()->count() > 0) {
+            return false;
+        }
+        return $user->hasRole(['admin', 'bibliothecaire']);
     }
 
     public function restore(User $user, Keyword $keyword): bool
     {
-        return $user->can('delete keywords');
+        return $user->hasRole(['admin', 'bibliothecaire']);
     }
 
     public function forceDelete(User $user, Keyword $keyword): bool
     {
-        return $user->can('delete keywords');
+        // Only admin can force delete
+        if (!$user->hasRole('admin')) {
+            return false;
+        }
+        // Prevent force deletion if keyword has references
+        if ($keyword->references()->withTrashed()->count() > 0) {
+            return false;
+        }
+        return true;
     }
 }

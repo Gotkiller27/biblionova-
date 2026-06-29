@@ -27,10 +27,11 @@ class AuthController extends BaseApiController
         try {
             $result = $this->authService->register($request->validated());
             
-            return $this->sendResponse(
-                $result['user'],
-                $result['message']
-            );
+            return $this->sendResponse([
+                'user' => $result['user'],
+                'token' => $result['token'],
+                'redirect_url' => $this->authService->getRedirectUrlByRole($result['user']),
+            ], $result['message']);
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -46,6 +47,7 @@ class AuthController extends BaseApiController
             
             return $this->sendResponse([
                 'user' => $result['user'],
+                'token' => $result['token'],
                 'redirect_url' => $this->authService->getRedirectUrlByRole($result['user']),
             ], $result['message']);
         } catch (\Exception $e) {
@@ -145,7 +147,7 @@ class AuthController extends BaseApiController
     }
 
     /**
-     * Refresh user session
+     * Refresh user token
      */
     public function refresh(): JsonResponse
     {
@@ -153,14 +155,18 @@ class AuthController extends BaseApiController
             return $this->sendError('Non authentifié', null, 401);
         }
 
-        // Regenerate session ID for security
-        request()->session()->regenerate();
+        $user = Auth::user();
         
-        $user = Auth::user()->load('roles');
+        // Delete current token
+        $user->currentAccessToken()->delete();
+        
+        // Create new token
+        $newToken = $user->createToken('auth-token')->plainTextToken;
         
         return $this->sendResponse([
-            'user' => $user,
+            'user' => $user->load('roles'),
+            'token' => $newToken,
             'redirect_url' => $this->authService->getRedirectUrlByRole($user),
-        ], 'Session rafraîchie');
+        ], 'Token rafraîchi');
     }
 }

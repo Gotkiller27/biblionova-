@@ -20,26 +20,42 @@ class CategoryPolicy
 
     public function create(User $user): bool
     {
-        return $user->can('create categories');
+        return $user->hasRole(['admin', 'bibliothecaire']);
     }
 
     public function update(User $user, Category $category): bool
     {
-        return $user->can('update categories');
+        return $user->hasRole(['admin', 'bibliothecaire']);
     }
 
     public function delete(User $user, Category $category): bool
     {
-        return $user->can('delete categories');
+        // Prevent deletion if category has references
+        if ($category->references()->exists() || $category->children()->exists()) {
+            return false;
+        }
+        
+        return $user->hasRole(['admin', 'bibliothecaire']);
     }
 
     public function restore(User $user, Category $category): bool
     {
-        return $user->can('delete categories');
+        return $user->hasRole(['admin', 'bibliothecaire']);
     }
 
     public function forceDelete(User $user, Category $category): bool
     {
-        return $user->can('delete categories');
+        // Only admin can force delete
+        if (!$user->hasRole('admin')) {
+            return false;
+        }
+        
+        // Prevent force deletion if category has references
+        if ($category->references()->withTrashed()->exists() || $category->children()->withTrashed()->exists()) {
+            return false;
+        }
+        
+        return true;
     }
 }
+

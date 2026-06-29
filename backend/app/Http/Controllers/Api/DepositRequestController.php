@@ -7,15 +7,19 @@ use App\Http\Requests\AssignManagerRequest;
 use App\Http\Requests\ReviewDepositRequestRequest;
 use App\Http\Requests\StoreDepositRequestRequest;
 use App\Http\Requests\UpdateDepositRequestRequest;
+use App\Http\Requests\DepositRequest\StoreAttachmentRequest;
 use App\Http\Resources\DepositRequestResource;
+use App\Http\Resources\DepositRequestAttachmentResource;
 use App\Models\DepositRequest;
+use App\Models\DepositRequestAttachment;
 use App\Models\Reference;
+use App\Services\DepositRequestService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class DepositRequestController extends BaseApiController
 {
-    public function __construct()
+    public function __construct(protected DepositRequestService $depositRequestService)
     {
         $this->authorizeResource(DepositRequest::class, 'deposit_request');
     }
@@ -289,5 +293,100 @@ class DepositRequestController extends BaseApiController
             'deposit_request' => new DepositRequestResource($depositRequest),
             'reference_id' => $reference->id,
         ], 'Demande publiée avec succès');
+    }
+
+    /**
+     * POST /deposit-requests/{id}/submit - Soumettre une demande en brouillon
+     */
+    public function submit(Request $request, DepositRequest $depositRequest)
+    {
+        $this->authorize('update', $depositRequest);
+
+        try {
+            $depositRequest = $this->depositRequestService->submitDepositRequest($depositRequest);
+            return $this->success(
+                new DepositRequestResource($depositRequest),
+                'Demande soumise avec succès'
+            );
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), null, 400);
+        }
+    }
+
+    /**
+     * POST /deposit-requests/{id}/cancel - Annuler une demande
+     */
+    public function cancel(Request $request, DepositRequest $depositRequest)
+    {
+        $this->authorize('update', $depositRequest);
+
+        try {
+            $depositRequest = $this->depositRequestService->cancelDepositRequest($depositRequest, $request->reason ?? null);
+            return $this->success(
+                new DepositRequestResource($depositRequest),
+                'Demande annulée avec succès'
+            );
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), null, 400);
+        }
+    }
+
+    /**
+     * GET /deposit-requests/{id}/attachments - Liste des pièces jointes
+     */
+    public function attachments(Request $request, DepositRequest $depositRequest)
+    {
+        $attachments = $depositRequest->attachments()
+            ->when($request->file_type, fn($q) => $q->byType($request->file_type))
+            ->latest()
+            ->paginate(15);
+
+        return $this->paginated($attachments, DepositRequestAttachmentResource::class, 'Pièces jointes récupérées avec succès');
+    }
+
+    /**
+     * POST /deposit-requests/{id}/attachments - Ajouter une pièce jointe
+     */
+    public function storeAttachment(StoreAttachmentRequest $request, DepositRequest $depositRequest)
+    {
+        $this->authorize('update', $depositRequest);
+
+        $attachment = $this->depositRequestService->addAttachment(
+            $depositRequest,
+            $request->file('file'),
+            $request->file_type,
+            $request->description
+        );
+
+        return $this->created(
+            new DepositRequestAttachmentResource($attachment),
+            'Pièce jointe ajoutée avec succès'
+        );
+    }
+
+    /**
+     * DELETE /deposit-requests/{id}/attachments/{attachment} - Supprimer une pièce jointe
+     */
+    public function deleteAttachment(Request $request, DepositRequest $depositRequest, DepositRequestAttachment $attachment)
+    {
+        $this->authorize('update', $depositRequest);
+
+        try {
+            $this->depositRequestService->deleteAttachment($depositRequest, $attachment);
+            return $this->success(null, 'Pièce jointe supprimée avec succès');
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), null, 404);
+        }
+    }
+
+    /**
+     * GET /deposit-requests/{id}/draft - Récupérer les brouillons de l'utilisateur
+     */
+    public function drafts(Request $request)
+    {
+        $drafts = $this->depositRequestService->getDrafts($request->user()->id)
+            ->paginate(15);
+
+        return $this->paginated($drafts, DepositRequestResource::class, 'Brouillons récupérés avec succès');
     }
 }
