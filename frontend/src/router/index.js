@@ -7,24 +7,8 @@ import RegisterView from '@/views/auth/RegisterView.vue'
 import ForgotPasswordView from '@/views/auth/ForgotPasswordView.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
 
-// Dashboard views
-import AdminDashboard from '@/views/dashboards/AdminDashboard.vue'
-
-// User management views
-import UsersListView from '@/views/users/UsersListView.vue'
-import UserProfileView from '@/views/users/UserProfileView.vue'
-
-// Category management views
-import CategoriesListView from '@/views/categories/CategoriesListView.vue'
-
-// Author management views
-import AuthorsListView from '@/views/authors/AuthorsListView.vue'
-
-// Publisher management views
-import PublishersListView from '@/views/publishers/PublishersListView.vue'
-
-// Keyword management views
-import KeywordsListView from '@/views/keywords/KeywordsListView.vue'
+// Layout
+import DashboardLayout from '@/layouts/DashboardLayout.vue'
 
 const routes = [
   // Redirect root to login
@@ -46,7 +30,7 @@ const routes = [
       },
       {
         path: 'register',
-        name: 'Register', 
+        name: 'Register',
         component: RegisterView,
         meta: { guest: true }
       },
@@ -65,104 +49,186 @@ const routes = [
     ]
   },
 
-  // Admin routes
+  // Protected routes with DashboardLayout
   {
-    path: '/admin',
-    meta: { requiresAuth: true, roles: ['admin'] },
+    path: '/',
+    component: DashboardLayout,
+    meta: { requiresAuth: true },
     children: [
+      // Admin routes
+      {
+        path: 'admin',
+        meta: { roles: ['admin'] },
+        children: [
+          {
+            path: 'dashboard',
+            name: 'AdminDashboard',
+            component: () => import('@/views/dashboards/AdminDashboard.vue')
+          },
+          {
+            path: 'users',
+            name: 'AdminUsers',
+            component: () => import('@/views/users/UsersListView.vue')
+          },
+          {
+            path: 'categories',
+            name: 'AdminCategories',
+            component: () => import('@/views/categories/CategoriesListView.vue')
+          },
+          {
+            path: 'authors',
+            name: 'AdminAuthors',
+            component: () => import('@/views/authors/AuthorsListView.vue')
+          },
+          {
+            path: 'publishers',
+            name: 'AdminPublishers',
+            component: () => import('@/views/publishers/PublishersListView.vue')
+          },
+          {
+            path: 'keywords',
+            name: 'AdminKeywords',
+            component: () => import('@/views/keywords/KeywordsListView.vue')
+          },
+          {
+            path: 'keywords/:id',
+            name: 'AdminKeywordDetails',
+            component: () => import('@/views/keywords/KeywordDetailsView.vue')
+          },
+          {
+            path: 'roles',
+            name: 'AdminRoles',
+            component: () => import('@/views/admin/AdminRolesView.vue')
+          },
+          {
+            path: 'deposit-requests',
+            name: 'AdminDepositRequests',
+            component: () => import('@/views/admin/AdminDepositRequestsView.vue')
+          },
+          {
+            path: 'references',
+            name: 'AdminReferences',
+            component: () => import('@/views/admin/AdminReferencesView.vue')
+          },
+        ]
+      },
+
+      // RH routes
+      {
+        path: 'rh',
+        meta: { roles: ['admin', 'responsable_rh'] },
+        children: [
+          {
+            path: 'dashboard',
+            name: 'RHDashboard',
+            component: () => import('@/views/dashboards/RHDashboard.vue')
+          },
+          {
+            path: 'users',
+            name: 'RHUsers',
+            component: () => import('@/views/users/UsersListView.vue')
+          },
+          {
+            path: 'users/create',
+            name: 'RHUsersCreate',
+            component: () => import('@/views/users/UserCreateForm.vue')
+          },
+          {
+            path: 'reports',
+            name: 'RHReports',
+            component: () => import('@/views/rh/RHReportsView.vue')
+          },
+        ]
+      },
+
+      // Validation routes
+      {
+        path: 'validation',
+        meta: { roles: ['admin', 'responsable_validation'] },
+        children: [
+          {
+            path: 'dashboard',
+            name: 'ValidationDashboard',
+            component: () => import('@/views/dashboards/ValidationDashboard.vue')
+          },
+          {
+            path: 'pending',
+            name: 'ValidationPending',
+            component: () => import('@/views/validation/ValidationPendingView.vue')
+          },
+          {
+            path: 'assigned',
+            name: 'ValidationAssigned',
+            component: () => import('@/views/validation/ValidationAssignedView.vue')
+          },
+          {
+            path: 'history',
+            name: 'ValidationHistory',
+            component: () => import('@/views/validation/ValidationHistoryView.vue')
+          },
+        ]
+      },
+
+      // Bibliothecaire routes
+      {
+        path: 'bibliothecaire',
+        meta: { roles: ['admin', 'bibliothecaire'] },
+        children: [
+          {
+            path: 'dashboard',
+            name: 'BibliothecaireDashboard',
+            component: () => import('@/views/dashboards/BibliothecaireDashboard.vue')
+          },
+          {
+            path: 'publications',
+            name: 'BibliothecairePublications',
+            component: () => import('@/views/bibliothecaire/BibliothecairePublicationsView.vue')
+          },
+          {
+            path: 'references',
+            name: 'BibliothecaireReferences',
+            component: () => import('@/views/bibliothecaire/BibliothecaireReferencesView.vue')
+          },
+          {
+            path: 'categories',
+            name: 'BibliothecaireCategories',
+            component: () => import('@/views/bibliothecaire/BibliothecaireCategoriesView.vue')
+          },
+          {
+            path: 'archives',
+            name: 'BibliothecaireArchives',
+            component: () => import('@/views/bibliothecaire/BibliothecaireArchivesView.vue')
+          },
+        ]
+      },
+
+      // User routes (accessible to all authenticated users)
       {
         path: 'dashboard',
-        name: 'AdminDashboard',
-        component: AdminDashboard
+        name: 'UserDashboard',
+        component: () => import('@/views/dashboards/UserDashboard.vue')
       },
       {
-        path: 'users',
-        name: 'AdminUsers',
-        component: UsersListView
+        path: 'new-request',
+        name: 'NewRequest',
+        component: () => import('@/views/NewRequestView.vue')
       },
       {
-        path: 'categories',
-        name: 'AdminCategories',
-        component: CategoriesListView
+        path: 'catalog',
+        name: 'Catalog',
+        component: () => import('@/views/CatalogView.vue')
       },
       {
-        path: 'authors',
-        name: 'AdminAuthors',
-        component: AuthorsListView
+        path: 'my-requests',
+        name: 'MyRequests',
+        component: () => import('@/views/MyRequestsView.vue')
       },
       {
-        path: 'publishers',
-        name: 'AdminPublishers',
-        component: PublishersListView
-      },
-      {
-        path: 'keywords',
-        name: 'AdminKeywords',
-        component: KeywordsListView
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('@/views/users/UserProfileView.vue')
       },
     ]
-  },
-
-  // RH routes
-  {
-    path: '/rh',
-    meta: { requiresAuth: true, roles: ['admin', 'responsable_rh'] },
-    children: [
-      {
-        path: 'dashboard',
-        name: 'RHDashboard',
-        component: () => import('@/views/dashboards/RHDashboard.vue')
-      },
-      {
-        path: 'users',
-        name: 'RHUsers',
-        component: UsersListView
-      },
-    ]
-  },
-
-  // Validation routes
-  {
-    path: '/validation',
-    meta: { requiresAuth: true, roles: ['admin', 'responsable_validation'] },
-    children: [
-      {
-        path: 'dashboard',
-        name: 'ValidationDashboard',
-        component: () => import('@/views/dashboards/ValidationDashboard.vue')
-      },
-      // TODO: Add other validation routes
-    ]
-  },
-
-  // Bibliothecaire routes
-  {
-    path: '/bibliothecaire',
-    meta: { requiresAuth: true, roles: ['admin', 'bibliothecaire'] },
-    children: [
-      {
-        path: 'dashboard',
-        name: 'BibliothecaireDashboard',
-        component: () => import('@/views/dashboards/BibliothecaireDashboard.vue')
-      },
-      // TODO: Add other bibliothecaire routes
-    ]
-  },
-
-  // User routes (accessible to all authenticated users)
-  {
-    path: '/dashboard',
-    name: 'UserDashboard',
-    component: () => import('@/views/dashboards/UserDashboard.vue'),
-    meta: { requiresAuth: true }
-  },
-
-  // Common authenticated routes
-  {
-    path: '/profile',
-    name: 'Profile',
-    component: UserProfileView,
-    meta: { requiresAuth: true }
   },
 
   // 404 route
@@ -181,9 +247,6 @@ const router = createRouter({
 // Navigation guard
 router.beforeEach(async (to, from) => {
   const authStore = useAuthStore()
-  // #region debug-point B:guard-entry
-  fetch('http://127.0.0.1:7777/event', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'dashboard-refresh-auth', runId: 'pre-fix', hypothesisId: 'B', location: 'frontend/src/router/index.js:beforeEach:entry', msg: '[DEBUG] router guard entered', data: { to: to.path, from: from.path, isAuthenticated: authStore.isAuthenticated, isLoading: authStore.isLoading, redirectUrl: authStore.redirectUrl, userRole: authStore.userRole }, ts: Date.now() }) }).catch(() => {})
-  // #endregion
   console.log('📍 Navigation guard triggered:', to.path)
 
   // Always initialize auth on each navigation to check backend session
@@ -191,13 +254,7 @@ router.beforeEach(async (to, from) => {
     console.log('⏳ Initializing auth...')
     try {
       await authStore.initAuth()
-      // #region debug-point B:guard-after-init
-      fetch('http://127.0.0.1:7777/event', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'dashboard-refresh-auth', runId: 'pre-fix', hypothesisId: 'B', location: 'frontend/src/router/index.js:beforeEach:after-init', msg: '[DEBUG] router guard after initAuth', data: { to: to.path, isAuthenticated: authStore.isAuthenticated, redirectUrl: authStore.redirectUrl, userRole: authStore.userRole, hasUser: !!authStore.user }, ts: Date.now() }) }).catch(() => {})
-      // #endregion
     } catch (e) {
-      // #region debug-point B:guard-init-error
-      fetch('http://127.0.0.1:7777/event', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'dashboard-refresh-auth', runId: 'pre-fix', hypothesisId: 'B', location: 'frontend/src/router/index.js:beforeEach:init-error', msg: '[DEBUG] router guard initAuth failed', data: { to: to.path, message: e?.message || null }, ts: Date.now() }) }).catch(() => {})
-      // #endregion
       console.error('❌ Error initializing auth:', e)
     }
   }
@@ -214,9 +271,6 @@ router.beforeEach(async (to, from) => {
     if (authStore.isAuthenticated) {
       // User is already authenticated, redirect to dashboard
       const redirectPath = authStore.redirectUrl || '/dashboard'
-      // #region debug-point E:guest-redirect
-      fetch('http://127.0.0.1:7777/event', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'dashboard-refresh-auth', runId: 'pre-fix', hypothesisId: 'E', location: 'frontend/src/router/index.js:beforeEach:guest-redirect', msg: '[DEBUG] guest route redirected to dashboard', data: { to: to.path, redirectPath, userRole: authStore.userRole }, ts: Date.now() }) }).catch(() => {})
-      // #endregion
       console.log('🔓 User already authenticated, redirecting to:', redirectPath)
       return redirectPath
     }
@@ -227,9 +281,6 @@ router.beforeEach(async (to, from) => {
   if (to.meta.requiresAuth) {
     if (!authStore.isAuthenticated) {
       // User not authenticated, redirect to login
-      // #region debug-point B:auth-redirect-login
-      fetch('http://127.0.0.1:7777/event', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'dashboard-refresh-auth', runId: 'pre-fix', hypothesisId: 'B', location: 'frontend/src/router/index.js:beforeEach:auth-redirect-login', msg: '[DEBUG] protected route redirected to login', data: { to: to.path, from: from.path, isAuthenticated: authStore.isAuthenticated, hasUser: !!authStore.user, redirectUrl: authStore.redirectUrl }, ts: Date.now() }) }).catch(() => {})
-      // #endregion
       console.log('🔒 User not authenticated, redirecting to login')
       return '/auth/login'
     }
@@ -242,9 +293,6 @@ router.beforeEach(async (to, from) => {
       if (!hasRequiredRole) {
         // User doesn't have required role, redirect to their dashboard
         const redirectPath = authStore.redirectUrl || '/dashboard'
-        // #region debug-point E:role-redirect
-        fetch('http://127.0.0.1:7777/event', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'dashboard-refresh-auth', runId: 'pre-fix', hypothesisId: 'E', location: 'frontend/src/router/index.js:beforeEach:role-redirect', msg: '[DEBUG] role mismatch redirected to dashboard', data: { to: to.path, userRole, redirectPath, allowedRoles: to.meta.roles }, ts: Date.now() }) }).catch(() => {})
-        // #endregion
         console.log('❌ User role', userRole, 'not allowed, redirecting to:', redirectPath)
         return redirectPath
       }

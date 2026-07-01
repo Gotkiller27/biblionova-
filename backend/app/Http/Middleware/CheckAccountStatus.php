@@ -11,21 +11,30 @@ class CheckAccountStatus
 {
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            
+        $user = $request->user();
+        
+        if ($user) {
             if ($user->status === 'inactive') {
-                Auth::logout();
+                if ($user->currentAccessToken()) {
+                    $user->currentAccessToken()->delete();
+                }
+                Auth::guard('web')->logout();
                 return ApiResponse::unauthorized('Votre compte est inactif');
             }
             
             if ($user->status === 'suspended') {
-                Auth::logout();
+                if ($user->currentAccessToken()) {
+                    $user->currentAccessToken()->delete();
+                }
+                Auth::guard('web')->logout();
                 return ApiResponse::forbidden('Votre compte est suspendu');
             }
             
             if ($user->status === 'banned') {
-                Auth::logout();
+                if ($user->currentAccessToken()) {
+                    $user->currentAccessToken()->delete();
+                }
+                Auth::guard('web')->logout();
                 return ApiResponse::forbidden('Votre compte est banni');
             }
         }

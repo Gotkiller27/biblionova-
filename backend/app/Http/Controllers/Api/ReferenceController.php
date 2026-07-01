@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Reference\StoreReferenceRequest;
@@ -19,12 +19,35 @@ class ReferenceController extends Controller
     public function index(Request $request)
     {
         $this->authorize('viewAny', Reference::class);
-        $references = Reference::with(['category', 'publisher', 'authors', 'keywords'])
-            ->when($request->search, fn($q) => $q->search($request->search))
-            ->when($request->category_id, fn($q) => $q->where('category_id', $request->category_id))
-            ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->latest()
-            ->paginate(15);
+        
+        $query = Reference::with(['category', 'publisher', 'authors', 'keywords']);
+
+        // Recherche simple
+        if ($request->search) {
+            $query->search($request->search);
+        }
+
+        // Recherche avancée
+        if ($request->filled('advanced_search')) {
+            $filters = $request->only([
+                'title', 'author', 'category_id', 'document_type', 'language',
+                'publication_year_from', 'publication_year_to', 'publisher_id',
+                'isbn', 'doi', 'issn', 'visibility', 'availability', 'keyword'
+            ]);
+            $query->advancedSearch($filters);
+        }
+
+        // Filtres simples
+        $query->when($request->category_id, fn($q) => $q->where('category_id', $request->category_id))
+              ->when($request->status, fn($q) => $q->where('status', $request->status))
+              ->when($request->visibility, fn($q) => $q->where('visibility', $request->visibility))
+              ->when($request->availability, fn($q) => $q->where('availability', $request->availability))
+              ->when($request->document_type, fn($q) => $q->where('document_type', $request->document_type))
+              ->when($request->language, fn($q) => $q->where('language', $request->language))
+              ->when($request->publisher_id, fn($q) => $q->where('publisher_id', $request->publisher_id));
+
+        $references = $query->latest()->paginate($request->per_page ?? 15);
+        
         return ApiResponse::paginated($references, ReferenceResource::class, 'References retrieved successfully');
     }
 

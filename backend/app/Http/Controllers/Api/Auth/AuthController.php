@@ -29,9 +29,11 @@ class AuthController extends BaseApiController
             
             return $this->sendResponse([
                 'user' => $result['user'],
-                'token' => $result['token'],
+                'token' => null,
                 'redirect_url' => $this->authService->getRedirectUrlByRole($result['user']),
             ], $result['message']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->sendError($e->getMessage(), $e->errors(), 422);
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -47,9 +49,11 @@ class AuthController extends BaseApiController
             
             return $this->sendResponse([
                 'user' => $result['user'],
-                'token' => $result['token'],
+                'token' => null,
                 'redirect_url' => $this->authService->getRedirectUrlByRole($result['user']),
             ], $result['message']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->sendError($e->getMessage(), $e->errors(), 422);
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -64,6 +68,8 @@ class AuthController extends BaseApiController
             $result = $this->authService->logout();
             
             return $this->sendResponse(null, $result['message']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->sendError($e->getMessage(), $e->errors(), 422);
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -98,6 +104,8 @@ class AuthController extends BaseApiController
             );
             
             return $this->sendResponse(null, $result['message']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->sendError($e->getMessage(), $e->errors(), 422);
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -114,6 +122,8 @@ class AuthController extends BaseApiController
             );
             
             return $this->sendResponse(null, $result['message']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->sendError($e->getMessage(), $e->errors(), 422);
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -128,6 +138,8 @@ class AuthController extends BaseApiController
             $result = $this->authService->resetPassword($request->validated());
             
             return $this->sendResponse(null, $result['message']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->sendError($e->getMessage(), $e->errors(), 422);
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -138,11 +150,11 @@ class AuthController extends BaseApiController
      */
     public function checkAuth(): JsonResponse
     {
-        $authenticated = Auth::check();
-        
+        $authenticated = Auth::guard('web')->check();
+
         return $this->sendResponse([
             'authenticated' => $authenticated,
-            'user' => $authenticated ? Auth::user()->load('roles') : null,
+            'user' => $authenticated ? Auth::guard('web')->user()->load('roles') : null,
         ]);
     }
 
@@ -157,16 +169,15 @@ class AuthController extends BaseApiController
 
         $user = Auth::user();
         
-        // Delete current token
-        $user->currentAccessToken()->delete();
-        
-        // Create new token
-        $newToken = $user->createToken('auth-token')->plainTextToken;
+        // Delete current token if present
+        if ($user->currentAccessToken()) {
+            $user->currentAccessToken()->delete();
+        }
         
         return $this->sendResponse([
             'user' => $user->load('roles'),
-            'token' => $newToken,
+            'token' => null,
             'redirect_url' => $this->authService->getRedirectUrlByRole($user),
-        ], 'Token rafraîchi');
+        ], 'Session rafraîchie');
     }
 }

@@ -76,12 +76,15 @@
 
         <!-- User Menu Dropdown -->
         <div v-if="showUserMenu" class="mt-2 space-y-1 bg-white/10 rounded-lg">
-          <button
-            class="w-full text-left px-4 py-2 rounded-lg text-sm font-inter text-white hover:bg-white/10">
+          <router-link
+            to="/profile"
+            class="w-full text-left px-4 py-2 rounded-lg text-sm font-inter text-white hover:bg-white/10 flex items-center gap-2"
+          >
             <i class="pi pi-user mr-2"></i>Mon profil
-          </button>
+          </router-link>
           <button
-            @click="handleLogout" class="w-full text-left px-4 py-2 rounded-lg text-sm font-inter text-white hover:bg-white/10">
+            @click="handleLogout" class="w-full text-left px-4 py-2 rounded-lg text-sm font-inter text-white hover:bg-white/10 flex items-center gap-2"
+          >
             <i class="pi pi-sign-out mr-2"></i>Déconnexion
           </button>
         </div>
@@ -115,6 +118,7 @@
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { Badge } from 'primevue/badge'
 
 const router = useRouter()
 const route = useRoute()
@@ -179,8 +183,7 @@ const getMenuItems = () => {
       {
         name: 'Workflow',
         children: [
-          { name: 'Demandes de dépôt', icon: 'pi pi-file-plus', to: '/admin/deposit-requests' },
-          { name: 'Validations', icon: 'pi pi-check-circle', to: '/admin/validations' }
+          { name: 'Demandes de dépôt', icon: 'pi pi-file-plus', to: '/admin/deposit-requests' }
         ]
       },
       {
@@ -188,7 +191,9 @@ const getMenuItems = () => {
         children: [
           { name: 'Références', icon: 'pi pi-book', to: '/admin/references' },
           { name: 'Catégories', icon: 'pi pi-tags', to: '/admin/categories' },
-          { name: 'Auteurs', icon: 'pi pi-pencil', to: '/admin/authors' }
+          { name: 'Auteurs', icon: 'pi pi-pencil', to: '/admin/authors' },
+          { name: 'Éditeurs', icon: 'pi pi-building', to: '/admin/publishers' },
+          { name: 'Mots-clés', icon: 'pi pi-tags', to: '/admin/keywords' }
         ]
       }
     ],
@@ -218,8 +223,7 @@ const getMenuItems = () => {
         name: 'Gestion',
         children: [
           { name: 'Publications', icon: 'pi pi-send', to: '/bibliothecaire/publications' },
-          { name: 'Archives', icon: 'pi pi-inbox', to: '/bibliothecaire/archives' },
-          { name: 'Révisions', icon: 'pi pi-file-edit', to: '/bibliothecaire/revisions' }
+          { name: 'Archives', icon: 'pi pi-inbox', to: '/bibliothecaire/archives' }
         ]
       }
     ],

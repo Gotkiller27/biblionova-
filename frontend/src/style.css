@@ -79,6 +79,20 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 0 3px rgba(197, 164, 109, 0.15);
 }
 
+.p-float-label label {
+  font-family: 'Inter', sans-serif;
+  color: #6B655E;
+}
+
+.p-float-label input:focus ~ label,
+.p-float-label input.p-filled ~ label,
+.p-float-label textarea:focus ~ label,
+.p-float-label textarea.p-filled ~ label,
+.p-float-label .p-inputwrapper-focus ~ label,
+.p-float-label .p-inputwrapper-filled ~ label {
+  color: #5C4033;
+}
+
 /* Cards */
 .p-card {
   border-radius: 18px;
@@ -173,6 +187,10 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Playfair Display', serif;
 }
 
+.p-dialog-content {
+  background: white;
+}
+
 /* Dropdown */
 .p-dropdown {
   border-radius: 8px;
@@ -184,10 +202,41 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 0 3px rgba(197, 164, 109, 0.15);
 }
 
+.p-dropdown-panel {
+  border-radius: 8px;
+  border: 1px solid #E2D7C6;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+}
+
+.p-dropdown-item {
+  font-family: 'Inter', sans-serif;
+  padding: 0.75rem 1rem;
+}
+
+.p-dropdown-item:hover {
+  background: #F8F5F0;
+}
+
+.p-dropdown-item.p-highlight {
+  background: rgba(197, 164, 109, 0.15);
+  color: #5C4033;
+}
+
 /* Badge */
 .p-badge {
   background: #C5A46D;
   color: white;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+}
+
+/* Password */
+.p-password {
+  width: 100%;
+}
+
+.p-password-input {
+  width: 100%;
 }
 
 /* Custom Classes */

@@ -30,19 +30,18 @@ class AuthService
         // Assign default role
         $user->assignRole('utilisateur');
 
-        // Create Sanctum token
-        $token = $user->createToken('auth-token')->plainTextToken;
+        // Log the user in to establish session
+        Auth::guard('web')->login($user);
 
         return [
             'success' => true,
             'message' => 'Inscription réussie',
             'user' => $user->load('roles'),
-            'token' => $token,
         ];
     }
 
     /**
-     * Login user with Sanctum token authentication
+     * Login user with Sanctum session cookies
      */
     public function login(array $credentials): array
     {
@@ -50,7 +49,7 @@ class AuthService
         $remember = $credentials['remember'] ?? false;
         unset($credentials['remember']);
 
-        // Attempt login with web guard (for password verification)
+        // Attempt login with web guard
         if (!Auth::guard('web')->attempt($credentials, $remember)) {
             throw ValidationException::withMessages([
                 'email' => 'Les informations d\'identification sont incorrectes.',
@@ -70,20 +69,13 @@ class AuthService
         // Update last login
         $user->update(['last_login_at' => now()]);
 
-        // Delete existing tokens
-        $user->tokens()->delete();
-
-        // Create new Sanctum token
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        // Logout from web guard (we only want token auth)
-        Auth::guard('web')->logout();
+        // Regenerate session to prevent session fixation
+        request()->session()->regenerate();
 
         return [
             'success' => true,
             'message' => 'Connexion réussie',
             'user' => $user->load('roles'),
-            'token' => $token,
         ];
     }
 
@@ -94,10 +86,15 @@ class AuthService
     {
         $user = Auth::user();
         
-        if ($user) {
-            // Delete current token
+        if ($user && $user->currentAccessToken()) {
+            // Delete current token if present
             $user->currentAccessToken()->delete();
         }
+
+        // Log out from web guard and invalidate session
+        Auth::guard('web')->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
 
         return [
             'success' => true,
@@ -110,7 +107,7 @@ class AuthService
      */
     public function me(): ?User
     {
-        return Auth::user()?->load('roles');
+        return Auth::guard('web')->user()?->load('roles');
     }
 
     /**
